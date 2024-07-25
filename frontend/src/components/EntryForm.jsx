@@ -15,7 +15,6 @@ import SubmitButton from "./SubmitButton";
 import TextButton from "./TextButton";
 import CreatePerson from "./CreatePerson";
 import ConfirmationWindow from "./ConfirmationWindow";
-import { uploadFile } from "./uploadFile";
 
 function EntryForm({ contestId, onSubmit }) {
   // get contest info
@@ -125,37 +124,18 @@ function EntryForm({ contestId, onSubmit }) {
     event.preventDefault();
 
     try {
-      const response = await onSubmit({
-        contest: contestId,
-        user: user.id,
-        contestants: persons,
-        email,
-        entry_title: entryTitle,
-      });
+      let form_data = new FormData();
+      form_data.append("contest", contestId);
+      form_data.append("user", user.id);
+      // TODO: handling of multiple contestants
+      form_data.append("contestants[0]name", persons[0].name);
+      form_data.append("contestants[0]surname", persons[0].surname);
+      form_data.append("email", email);
+      form_data.append("entry_title", entryTitle);
+      if (file)
+        form_data.append("entry_file", file, fileText);
 
-      if (response && response.status === 201) {
-        setOpen(true);
-        if (file) {
-          // file is uploaded to cloud storage only after making sure entry is valid
-          const filePath = await uploadFile("entries", file);
-          console.log(filePath);
-          const updateResponse = await axios.patch(
-            `${import.meta.env.VITE_API_URL}api/entries/${response.data.id}/`,
-            {
-              entry_file: filePath,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Token " + sessionStorage.getItem("accessToken"),
-              },
-            }
-          );
-          if (updateResponse.status !== 200) {
-            console.error("Error updating entry:", updateResponse.status);
-          }
-        }
-      }
+      const response = await onSubmit(form_data);
     } catch (error) {
       setErrorMessage(JSON.stringify(error.response.data, null, 2));
       setOpen(true);

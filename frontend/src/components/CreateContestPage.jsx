@@ -15,11 +15,23 @@ function CreateContestPage() {
     let contestId;
     let contestResponse, criterionResponse;
 
+      let contest_form_data = new FormData();
+      contest_form_data.append("title", formData.title);
+      contest_form_data.append("description", formData.description);
+      contest_form_data.append("date_start", formData.date_start);
+      contest_form_data.append("date_end", formData.date_end);
+      contest_form_data.append("individual", formData.individual);
+      contest_form_data.append("type", formData.type);
+      if (formData.poster)
+        contest_form_data.append("poster_img", formData.poster, formData.posterText);
+      if (formData.rulesFile)
+        contest_form_data.append("rules_pdf", formData.rulesFile, formData.rulesText);
+
     // Return the promise chain so that the calling function can await it
     return axios
-      .post(`${import.meta.env.VITE_API_URL}api/contests/`, formData, {
+      .post(`${import.meta.env.VITE_API_URL}api/contests/`, contest_form_data, {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
           Authorization: "Token " + sessionStorage.getItem("accessToken"),
         },
       })

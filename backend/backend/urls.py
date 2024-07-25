@@ -20,7 +20,8 @@ from contest_platform.urls import router
 from contest_platform.views import import_schools
 from rest_framework.authtoken.views import obtain_auth_token
 from contest_platform.views import Logout
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -28,4 +29,4 @@ urlpatterns = [
     path("api/login/", obtain_auth_token),
     path("api/logout/", Logout.as_view()),
     path("api/import/", import_schools),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

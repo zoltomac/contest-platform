@@ -19,7 +19,6 @@ import SubmitButton from "./SubmitButton";
 import CreateCriterion from "./CreateCriterion";
 import TextButton from "./TextButton";
 import FileUploadButton from "./FileUploadButton";
-import { uploadFile } from "./uploadFile";
 import ConfirmationWindow from "./ConfirmationWindow";
 
 function ContestForm({ onSubmit }) {
@@ -150,39 +149,11 @@ function ContestForm({ onSubmit }) {
         individual,
         type: finalType,
         criterion: criteria,
+        poster,
+        posterText,
+        rulesFile,
+        rulesText
       });
-      if (
-        contestResponse.status === 201 &&
-        criterionResponse.every((response) => response.status === 201)
-      ) {
-        setOpen(true);
-        // if contest is added succesfully, selected files are uploaded to cloud storage
-        let posterPath = null;
-        if (poster) {
-          posterPath = await uploadFile("posters", poster);
-        }
-        let rulesPath = null;
-        if (rulesFile) {
-          rulesPath = await uploadFile("rules", rulesFile);
-        }
-        await axios.patch(
-          `${import.meta.env.VITE_API_URL}api/contests/${contestResponse.data.id}/`,
-          {
-            poster_img: posterPath,
-            rules_pdf: rulesPath,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Token " + sessionStorage.getItem("accessToken"),
-            },
-          },
-        )
-          .catch((error) => {
-            setErrorMessage(JSON.stringify(error.response.data, null, 2));
-            setOpen(true);
-          });
-      }
     } catch (error) {
       console.error(error);
       setErrorMessage(JSON.stringify(error.response.data, null, 2));

@@ -3,6 +3,9 @@ from datetime import date
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
+# lets us explicitly set upload path and filename
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
 
 # REQ_09A
 class Contest(models.Model):
@@ -13,8 +16,8 @@ class Contest(models.Model):
     # 1 - konkurs indywidualny; 0 - konkurs grupowy
     individual = models.BooleanField(default=True)
     type = models.CharField(max_length=50, default="")
-    rules_pdf = models.URLField(max_length=300, null=True)
-    poster_img = models.URLField(max_length=300, null=True)
+    rules_pdf = models.FileField(upload_to="rules", null=True)
+    poster_img = models.ImageField(upload_to=upload_to, null=True)
 
     def __str__(self):
         return f"{self.title, self.description}"
@@ -55,7 +58,7 @@ class Entry(models.Model):
     date_submitted = models.DateField(default=date.today)
     email = models.EmailField(null=True)
     entry_title = models.CharField(max_length=100)
-    entry_file = models.URLField(max_length=300, null=True)
+    entry_file = models.FileField(upload_to=upload_to, null=True)
 # REQ_24_END
 
 

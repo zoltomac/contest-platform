@@ -45,6 +45,8 @@ class UserSerializer(serializers.ModelSerializer):
 class ContestSerializer(serializers.ModelSerializer):
     date_start = serializers.DateField(input_formats=["%Y-%m-%d"])
     date_end = serializers.DateField(input_formats=["%Y-%m-%d"])
+    rules_pdf = serializers.FileField(required=False)
+    poster_img = serializers.ImageField(required=False)
 
     # REQ_10
     def validate(self, data):
@@ -79,6 +81,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
 class EntrySerializer(serializers.ModelSerializer):
     contestants = PersonSerializer(many=True, read_only=False)
+    entry_file = serializers.FileField(required=False)
 
     def create(self, validated_data):
         # Create the entry instance

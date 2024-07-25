@@ -38,6 +38,7 @@ from .utils.import_schools_csv import upload_schools_data
 
 from rest_framework.decorators import api_view
 from datetime import date
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class Logout(GenericAPIView):
@@ -54,6 +55,7 @@ class Logout(GenericAPIView):
 class ContestViewSet(ModelViewSet):
     queryset = Contest.objects.all()
     serializer_class = ContestSerializer
+    parser_classes = (MultiPartParser, FormParser)
     authentication_classes = [TokenAuthentication]
     permission_classes = [ContestPermission]
 
@@ -110,6 +112,7 @@ class PersonViewSet(ModelViewSet):
 class EntryViewSet(ModelViewSet):
     queryset = Entry.objects.all()
     serializer_class = EntrySerializer
+    parser_classes = (MultiPartParser, FormParser)
     authentication_classes = [TokenAuthentication]
     permission_classes = [EntryPermission]
 

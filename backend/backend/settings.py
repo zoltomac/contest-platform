@@ -176,3 +176,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'konkursy.bowarto@gmail.com'
 EMAIL_HOST_PASSWORD = os.getenv('GMAIL_HOST_PASSWORD')
+
+# Actual directory user files go to
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
+
+# URL used to access the media
+MEDIA_URL = '/media/'
