@@ -154,6 +154,7 @@ function ContestForm({ onSubmit }) {
         rulesFile,
         rulesText
       });
+      setOpen(true);
     } catch (error) {
       console.error(error);
       setErrorMessage(JSON.stringify(error.response.data, null, 2));

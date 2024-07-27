@@ -136,6 +136,7 @@ function EntryForm({ contestId, onSubmit }) {
         form_data.append("entry_file", file, fileText);
 
       const response = await onSubmit(form_data);
+      setOpen(true);
     } catch (error) {
       setErrorMessage(JSON.stringify(error.response.data, null, 2));
       setOpen(true);
