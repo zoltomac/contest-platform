@@ -52,7 +52,7 @@ class User(AbstractUser):
 
 # REQ_24
 class Entry(models.Model):
-    contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
+    contest = models.ForeignKey(Contest, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     contestants = models.ManyToManyField(Person)
     date_submitted = models.DateField(default=date.today)

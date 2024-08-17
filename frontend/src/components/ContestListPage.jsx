@@ -16,6 +16,7 @@ import { styled } from "@mui/material/styles";
 import axios from "axios";
 import Navbar from "./Navbar.jsx";
 import TextButton from "./TextButton";
+import ConfirmationWindow from "./ConfirmationWindow";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
@@ -26,11 +27,23 @@ const GreenButton = styled(Button)({
     backgroundColor: "#82a819",
   },
 });
+const RedButton = styled(Button)({
+  backgroundColor: "#FF0000",
+  color: "white",
+  "&:hover": {
+    backgroundColor: "#EE0000",
+  },
+});
 
 const ContestIndexPage = () => {
   const [contests, setContests] = useState([]);
   const [selectedContest, setSelectedContest] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
+  const [isMsgOpen, setMsgOpen] = useState(false);
+  // error message if delete failed
+  const [errorMessage, setErrorMessage] = useState("");
+  const [refreshData, setRefreshData] = useState(false);
   const [userData, setUserData] = useState({});
   const accessToken = sessionStorage.getItem("accessToken");
 
@@ -67,7 +80,7 @@ const ContestIndexPage = () => {
       .catch((error) => {
         console.log("Error:", error);
       });
-  }, []);
+  }, [refreshData]);
 
   const handleContestClick = (contest) => {
     setSelectedContest(contest);
@@ -77,6 +90,38 @@ const ContestIndexPage = () => {
   const handleModalClose = () => {
     setModalOpen(false);
   };
+
+  const handleClose = () => {
+    setConfirmOpen(false);
+    setMsgOpen(false);
+    setModalOpen(false);
+  };
+  
+  const showConfirm = () => {
+    setConfirmOpen(true);
+  }
+
+  const handleDelete = () => {
+    setConfirmOpen(false);
+    let contestLink = `${import.meta.env.VITE_API_URL}api/contests/${selectedContest?.id}`;
+    const headersCurrentUser = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + accessToken,
+      },
+    };
+    axios
+      .delete(contestLink, headersCurrentUser)
+      .then((res) => {
+        setRefreshData(!refreshData); // forcing refresch with useEffect
+        setMsgOpen(true);
+      })
+      .catch((error) => {
+        console.log("Error:", error);
+        setErrorMessage("Uwaga: nie można usuwać konkursów ze zgłoszonymi pracami; jeżeli konieczne, usuń wcześniej wszystkie zgłoszone w tym konkursie prace. "+error.message)
+        setMsgOpen(true);
+      });
+  }
 
   return (
     <div>
@@ -247,6 +292,13 @@ const ContestIndexPage = () => {
           {/* Add other details as needed */}
         </DialogContent>
         <DialogActions>
+          {userData.is_staff ? (
+            <RedButton onClick={showConfirm} align="left">
+              <Typography align="center" style={{ color: "white" }}>
+                Usuń
+              </Typography>
+            </RedButton>
+          ) : null }
           {/* # REQ_21 */}
           <Link to={`/create-entry/${selectedContest?.id}`}>
             <GreenButton>
@@ -263,6 +315,28 @@ const ContestIndexPage = () => {
           </GreenButton>
         </DialogActions>
       </Dialog>
+
+      <ConfirmationWindow
+          open={isConfirmOpen}
+          setOpen={setConfirmOpen}
+          title="Potwierdź usunięcie"
+          message={`Czy na pewno chcesz usunąć konkurs "${selectedContest?.title}"`}
+          onConfirm={handleDelete}
+          showCancelButton={true}
+      />
+      <ConfirmationWindow
+          open={isMsgOpen}
+          setOpen={setMsgOpen}
+          title={
+            errorMessage
+              ? "Wystąpił błąd przy usuwaniu konkursu"
+              : "Konkurs został usunięty"
+          }
+          message={errorMessage || "Zostaniesz przekierowany do strony głównej"}
+          onConfirm={handleClose}
+          showCancelButton={false}
+      />
+
     </div>
   );
 };
