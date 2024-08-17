@@ -16,8 +16,8 @@ class Contest(models.Model):
     # 1 - konkurs indywidualny; 0 - konkurs grupowy
     individual = models.BooleanField(default=True)
     type = models.CharField(max_length=50, default="")
-    rules_pdf = models.FileField(upload_to="rules", null=True)
-    poster_img = models.ImageField(upload_to=upload_to, null=True)
+    rules_pdf = models.FileField(upload_to="rules", null=True, max_length=255)
+    poster_img = models.ImageField(upload_to=upload_to, null=True, max_length=255)
 
     def __str__(self):
         return f"{self.title, self.description}"
@@ -58,7 +58,7 @@ class Entry(models.Model):
     date_submitted = models.DateField(default=date.today)
     email = models.EmailField(null=True)
     entry_title = models.CharField(max_length=100)
-    entry_file = models.FileField(upload_to=upload_to, null=True)
+    entry_file = models.FileField(upload_to=upload_to, null=True, max_length=255)
 # REQ_24_END
 
 

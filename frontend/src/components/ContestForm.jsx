@@ -117,9 +117,7 @@ function ContestForm({ onSubmit }) {
   const handlePosterChange = (event) => {
     const file = event.target.files[0];
     setPoster(file);
-    const filename =
-      file.name.length > 25 ? `${file.name.slice(0, 23)}...` : file.name;
-    setPosterText(filename);
+    setPosterText(file.name);
   };
 
   // # REQ_11
@@ -128,9 +126,7 @@ function ContestForm({ onSubmit }) {
   const handleRulesFileChange = (event) => {
     const file = event.target.files[0];
     setRulesFile(file);
-    const filename =
-      file.name.length > 25 ? `${file.name.slice(0, 23)}...` : file.name;
-    setRulesText(filename);
+    setRulesText(file.name);
   };
   // # REQ_11_END
 

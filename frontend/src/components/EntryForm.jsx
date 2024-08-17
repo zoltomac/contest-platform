@@ -112,11 +112,7 @@ function EntryForm({ contestId, onSubmit }) {
   const handleFileChange = (event) => {
     const uploadedFile = event.target.files[0];
     setFile(uploadedFile);
-    const filename =
-      uploadedFile.name.length > 25
-        ? `${uploadedFile.name.slice(0, 25)}...`
-        : uploadedFile.name;
-    setFileText(`Załączono pracę: ${filename}`);
+    setFileText(`Załączono pracę: ${uploadedFile.name}`);
   };
   // # REQ_25_END
 
