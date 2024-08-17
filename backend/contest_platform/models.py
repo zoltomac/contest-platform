@@ -7,6 +7,16 @@ from django.core.exceptions import ValidationError
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
 
+
+# REQ_06A
+# REQ_23B
+class User(AbstractUser):
+    is_jury = models.BooleanField(default=False)
+    is_coordinating_unit = models.BooleanField(default=False)
+# REQ_06A_END
+# REQ_23B_END
+
+
 # REQ_09A
 class Contest(models.Model):
     title = models.CharField(max_length=200, default="")
@@ -18,6 +28,7 @@ class Contest(models.Model):
     type = models.CharField(max_length=50, default="")
     rules_pdf = models.FileField(upload_to="rules", null=True, max_length=255)
     poster_img = models.ImageField(upload_to=upload_to, null=True, max_length=255)
+    jurors = models.ManyToManyField(User, limit_choices_to={"is_jury": True})
 
     def __str__(self):
         return f"{self.title, self.description}"
@@ -39,15 +50,6 @@ class Person(models.Model):
     name = models.CharField(max_length=20)
     surname = models.CharField(max_length=50)
 # REQ_23_END
-
-
-# REQ_06A
-# REQ_23B
-class User(AbstractUser):
-    is_jury = models.BooleanField(default=False)
-    is_coordinating_unit = models.BooleanField(default=False)
-# REQ_06A_END
-# REQ_23B_END
 
 
 # REQ_24
