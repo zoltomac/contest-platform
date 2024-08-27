@@ -20,3 +20,4 @@ frontend/package-lock.json
 pyvenv.cfg
 backend/contest_platform/migrations/*.py
 mediafiles
+static
