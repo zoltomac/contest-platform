@@ -20,7 +20,7 @@ class User(AbstractUser):
 # REQ_09A
 class Contest(models.Model):
     title = models.CharField(max_length=200, default="")
-    description = models.CharField(max_length=1800, default="")
+    description = models.TextField(max_length=1800, default="")
     date_start = models.DateField(default=date.today)
     date_end = models.DateField(default=date.today)
     # 1 - konkurs indywidualny; 0 - konkurs grupowy
@@ -31,11 +31,14 @@ class Contest(models.Model):
     jurors = models.ManyToManyField(User, limit_choices_to={"is_jury": True})
 
     def __str__(self):
-        return f"{self.title, self.description}"
+        return f"{self.title} [{self.date_start} -> {self.date_end}]"
 # REQ_09A_END
 
 
 class Address(models.Model):
+    class Meta:
+        verbose_name_plural = "Addresses"
+
     street = models.CharField(max_length=50)
     number = models.CharField(max_length=10)
     postal_code = models.CharField(max_length=6)
@@ -54,6 +57,9 @@ class Person(models.Model):
 
 # REQ_24
 class Entry(models.Model):
+    class Meta:
+        verbose_name_plural = "Entries"
+        
     contest = models.ForeignKey(Contest, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     contestants = models.ManyToManyField(Person)
