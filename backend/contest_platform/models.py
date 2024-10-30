@@ -16,6 +16,17 @@ class User(AbstractUser):
 # REQ_06A_END
 # REQ_23B_END
 
+# REQ_09B
+class GradeCriterion(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=500, blank=True)
+    max_rating = models.IntegerField(default=10)
+    active = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return f"{self.title} ({self.max_rating})"
+# REQ_09B_END
+
 
 # REQ_09A
 class Contest(models.Model):
@@ -26,9 +37,11 @@ class Contest(models.Model):
     # 1 - konkurs indywidualny; 0 - konkurs grupowy
     individual = models.BooleanField(default=True)
     type = models.CharField(max_length=50, default="")
-    rules_pdf = models.FileField(upload_to="rules", null=True, max_length=255)
+    rules_pdf = models.FileField(upload_to="rules", blank=True, null=True, max_length=255)
     poster_img = models.ImageField(upload_to=upload_to, null=True, max_length=255)
     jurors = models.ManyToManyField(User, limit_choices_to={"is_jury": True})
+    grade_criterions = models.ManyToManyField(GradeCriterion, limit_choices_to={"active": True})
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.title} [{self.date_start} -> {self.date_end}]"
@@ -52,6 +65,9 @@ class Address(models.Model):
 class Person(models.Model):
     name = models.CharField(max_length=20)
     surname = models.CharField(max_length=50)
+
+    def __str__(self) -> str:
+        return f"{self.name} {self.surname}"
 # REQ_23_END
 
 
@@ -70,18 +86,14 @@ class Entry(models.Model):
 # REQ_24_END
 
 
-# REQ_09B
-class GradeCriterion(models.Model):
-    contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
-    description = models.CharField(max_length=500)
-    max_rating = models.IntegerField()
-# REQ_09B_END
-
 
 class Grade(models.Model):
     criterion = models.ForeignKey(GradeCriterion, on_delete=models.CASCADE)
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
-    value = models.IntegerField(null=True)
+    value = models.IntegerField()
+
+    class Meta:
+        unique_together = [["criterion", "entry"]]
 
     def clean(self):
         if self.value > self.criterion.max_rating:
@@ -89,6 +101,12 @@ class Grade(models.Model):
                 {
                     "value": "Value must be less than or equal to the max \
             rating of the criterion."
+                }
+            )
+        if not self.entry.contest.grade_criterions.contains(self.criterion):
+            raise ValidationError(
+                {
+                    "criterion": "Criterion has to be from the list defined for the Contest."
                 }
             )
 
