@@ -16,7 +16,7 @@ function GradeCriterionCard({ positionNumber, grade, gradeCriterion, onGradeChan
         <span className="circle-number">{positionNumber}</span>
       </div>
       <p className="lower-grade-entry-card-text" style={{ display: "inline-block", marginLeft: "10px" }}>
-        {gradeCriterion.description}
+        {gradeCriterion.title}
       </p>
       <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
         <InputLabel id="setGradeLabel">Ocena</InputLabel>

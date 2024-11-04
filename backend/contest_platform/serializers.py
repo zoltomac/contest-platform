@@ -141,7 +141,7 @@ class AddressSerializer(serializers.ModelSerializer):
 class GradeCriterionSerializer(serializers.ModelSerializer):
     class Meta:
         model = GradeCriterion
-        fields = ("id", "contest", "description", "max_rating")
+        fields = ("title", "description", "max_rating")
 
 
 class GradeSerializer(serializers.ModelSerializer):
